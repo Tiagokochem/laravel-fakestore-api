@@ -1,9 +1,16 @@
 <template>
   <div>
-    <h1>Hello Vue 3 + Vite + Laravel</h1>
+    <h1>FakeStore API Integration</h1>
+    <ProductList />
   </div>
 </template>
 
-<script setup>
-console.log('Vue is working!');
+<script>
+import ProductList from "./components/ProductList.vue";
+
+export default {
+  components: {
+    ProductList,
+  },
+};
 </script>
