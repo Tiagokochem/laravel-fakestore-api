@@ -1,16 +1,16 @@
 <template>
-  <div>
-    <ProductList />
-  </div>
+  <router-view />
 </template>
 
 <script>
-import ProductList from "./components/ProductList.vue";
+import { createApp } from "vue";
+import router from "./router.js";
 
 export default {
   name: "App",
-  components: {
-    ProductList,
-  },
 };
+
+const app = createApp({});
+app.use(router);
+app.mount("#app");
 </script>
