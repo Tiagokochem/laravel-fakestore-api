@@ -2,6 +2,8 @@
   <div class="product-list">
     <h1 class="page-title">Product List</h1>
 
+    <button @click="syncProducts" class="sync-button">Sync Products</button>
+
     <CategoryFilter @category-selected="filterByCategory" />
 
     <div v-if="loading" class="loading">Loading products...</div>
@@ -16,21 +18,11 @@
       </div>
 
       <div class="pagination">
-        <button
-          @click="previousPage"
-          :disabled="currentPage === 1"
-          class="pagination-btn"
-        >
+        <button @click="previousPage" :disabled="currentPage === 1" class="pagination-btn">
           Previous
         </button>
-
         <span>Page {{ currentPage }} of {{ totalPages }}</span>
-
-        <button
-          @click="nextPage"
-          :disabled="currentPage === totalPages"
-          class="pagination-btn"
-        >
+        <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination-btn">
           Next
         </button>
       </div>
@@ -80,6 +72,15 @@ export default {
         this.loading = false;
       }
     },
+    async syncProducts() {
+      try {
+        const response = await axios.post("/api/sync-products");
+        console.log(response.data.message);
+        this.fetchProducts(); // Atualiza a lista após a sincronização
+      } catch (error) {
+        console.error("Error syncing products:", error);
+      }
+    },
     filterByCategory(category) {
       this.currentPage = 1;
 
@@ -113,6 +114,21 @@ export default {
   padding: 16px;
   background-color: #f5f5f5;
   min-height: 100vh;
+}
+
+.sync-button {
+  background-color: #28a745;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  transition: background-color 0.3s;
+}
+
+.sync-button:hover {
+  background-color: #218838;
 }
 
 .grid {
