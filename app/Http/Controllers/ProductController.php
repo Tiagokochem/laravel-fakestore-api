@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Services\FakeStoreService;
 use Illuminate\Http\JsonResponse;
 
@@ -16,6 +17,12 @@ class ProductController extends Controller
 
     public function index(): JsonResponse
     {
+        $products = Product::all();
+
+        if ($products->isNotEmpty()) {
+            return response()->json($products);
+        }
+
         $products = $this->fakeStoreService->getProducts();
         return response()->json($products);
     }

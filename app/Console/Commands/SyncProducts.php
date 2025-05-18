@@ -25,15 +25,15 @@ class SyncProducts extends Command
         $products = $response->json();
 
         foreach ($products as $apiProduct) {
-            Product::updateOrCreate(
-                ['api_id' => $apiProduct['id']],
-                [
-                    'title' => $apiProduct['title'],
-                    'description' => $apiProduct['description'],
-                    'price' => $apiProduct['price'],
-                    'image' => $apiProduct['image'],
-                ]
-            );
+            $category = $apiProduct['category'] ?? 'Uncategorized';
+
+            $product = Product::firstOrNew(['api_id' => $apiProduct['id']]);
+            $product->title = $apiProduct['title'];
+            $product->description = $apiProduct['description'];
+            $product->price = $apiProduct['price'];
+            $product->image = $apiProduct['image'];
+            $product->category = $category;
+            $product->save();
         }
 
         $this->info('Products synchronized successfully.');

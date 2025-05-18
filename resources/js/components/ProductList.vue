@@ -10,11 +10,7 @@
 
     <div v-else>
       <div class="grid">
-        <ProductCard
-          v-for="product in paginatedProducts"
-          :key="product.id"
-          :product="product"
-        />
+        <ProductCard v-for="product in paginatedProducts" :key="product.id" :product="product" />
       </div>
 
       <div class="pagination">
@@ -64,7 +60,7 @@ export default {
     async fetchProducts() {
       try {
         const response = await axios.get("/api/products");
-        this.products = response.data;
+        this.allProducts = response.data;
         this.filteredProducts = response.data;
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -82,16 +78,20 @@ export default {
       }
     },
     filterByCategory(category) {
-      this.currentPage = 1;
+  this.currentPage = 1;
 
-      if (category) {
-        this.filteredProducts = this.products.filter(
-          (product) => product.category === category
-        );
-      } else {
-        this.filteredProducts = this.products;
-      }
-    },
+  this.filteredProducts = this.allProducts.filter((product) => {
+    // Se o produto não tiver categoria, define como "Uncategorized"
+    const productCategory = product.category ? product.category : "Uncategorized";
+
+    if (category) {
+      return productCategory.toLowerCase() === category.toLowerCase();
+    }
+    
+    return true;
+  });
+},
+
     nextPage() {
       if (this.currentPage < this.totalPages) {
         this.currentPage++;
