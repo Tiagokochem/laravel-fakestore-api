@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h1>FakeStore API Integration</h1>
     <ProductList />
   </div>
 </template>
@@ -9,6 +8,7 @@
 import ProductList from "./components/ProductList.vue";
 
 export default {
+  name: "App",
   components: {
     ProductList,
   },
