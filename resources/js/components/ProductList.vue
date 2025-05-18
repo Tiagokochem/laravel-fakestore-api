@@ -30,6 +30,7 @@
 import axios from "axios";
 import ProductCard from "./ProductCard.vue";
 import CategoryFilter from "./CategoryFilter.vue";
+import Swal from "sweetalert2";
 
 export default {
   name: "ProductList",
@@ -72,25 +73,44 @@ export default {
       try {
         const response = await axios.post("/api/sync-products");
         console.log(response.data.message);
-        this.fetchProducts(); // Atualiza a lista após a sincronização
+
+        Swal.fire({
+          icon: "success",
+          title: "Synchronization Complete",
+          html: "<strong>All products have been updated successfully!</strong>",
+          background: "#f0f2f5",
+          confirmButtonColor: "#007bff",
+          timer: 3000,
+          timerProgressBar: true,
+        });
+
+        await this.fetchProducts(); 
+
       } catch (error) {
-        console.error("Error syncing products:", error);
+        console.error("Error syncing products:", error.response?.data || error.message);
+
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "There was a problem synchronizing products.",
+          confirmButtonColor: "#d9534f",
+        });
       }
     },
     filterByCategory(category) {
-  this.currentPage = 1;
+      this.currentPage = 1;
 
-  this.filteredProducts = this.allProducts.filter((product) => {
-    // Se o produto não tiver categoria, define como "Uncategorized"
-    const productCategory = product.category ? product.category : "Uncategorized";
+      this.filteredProducts = this.allProducts.filter((product) => {
+        // Se o produto não tiver categoria, define como "Uncategorized"
+        const productCategory = product.category ? product.category : "Uncategorized";
 
-    if (category) {
-      return productCategory.toLowerCase() === category.toLowerCase();
-    }
-    
-    return true;
-  });
-},
+        if (category) {
+          return productCategory.toLowerCase() === category.toLowerCase();
+        }
+
+        return true;
+      });
+    },
 
     nextPage() {
       if (this.currentPage < this.totalPages) {
