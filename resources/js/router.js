@@ -3,8 +3,17 @@ import ProductList from "./components/ProductList.vue";
 import ProductDetail from "./components/ProductDetail.vue";
 
 const routes = [
-  { path: "/", component: ProductList },
-  { path: "/product/:id", component: ProductDetail, props: true },
+  {
+    path: "/",
+    name: "ProductList",
+    component: ProductList,
+  },
+  {
+    path: "/product/:id",
+    name: "ProductDetail",
+    component: ProductDetail,
+    props: true,
+  },
 ];
 
 const router = createRouter({
