@@ -55,6 +55,7 @@ export default {
     return {
       products: [],
       filteredProducts: [],
+      currentFilter: null,
       loading: true,
       currentPage: 1,
       itemsPerPage: 6,
@@ -94,13 +95,18 @@ export default {
       }
     },
 
-    async fetchProducts(shouldSync = true) {
+    async fetchProducts(currentFilter = null, shouldSync = true) {
       this.loading = true;
 
       try {
         const response = await axios.get("/api/products");
         this.allProducts = response.data;
-        this.filteredProducts = response.data;
+
+        if (currentFilter) {
+          this.filterByCategory(currentFilter);
+        } else {
+          this.filteredProducts = response.data;
+        }
 
         // Verifica a página atual e ajusta se necessário
         if (this.currentPage > this.totalPages) {
@@ -109,11 +115,11 @@ export default {
 
       } catch (error) {
         console.error("Error fetching products:", error);
-
       } finally {
         this.loading = false;
       }
     },
+
 
     async syncProducts() {
       this.loading = true;
@@ -163,12 +169,8 @@ export default {
               timer: 2000,
             });
 
-            await this.fetchProducts(false);
-
-            // Ajusta a página atual
-            if (this.currentPage > this.totalPages) {
-              this.currentPage = this.totalPages;
-            }
+            // Reaplica o filtro atual
+            await this.fetchProducts(this.currentFilter);
 
           } catch (error) {
             Swal.fire({
@@ -207,8 +209,8 @@ export default {
               timer: 2000,
             });
 
-            // Atualiza a listagem, sem sincronizar
-            await this.fetchProducts(false);
+            // Reaplica o filtro atual
+            await this.fetchProducts(this.currentFilter);
 
           } catch (error) {
             Swal.fire({
@@ -223,6 +225,7 @@ export default {
 
     filterByCategory(category) {
       this.currentPage = 1;
+      this.currentFilter = category;
 
       this.filteredProducts = this.allProducts.filter((product) => {
         const productCategory = product.category ? product.category : "Uncategorized";
