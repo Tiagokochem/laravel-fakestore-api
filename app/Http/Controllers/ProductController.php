@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Services\FakeStoreService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -37,5 +38,23 @@ class ProductController extends Controller
     {
         $categories = $this->fakeStoreService->getCategories();
         return response()->json($categories);
+    }
+    public function store(Request $request): JsonResponse
+    {
+        $product = Product::create($request->all());
+        return response()->json(['message' => 'Product created successfully.', 'product' => $product]);
+    }
+
+    public function update(Request $request, $id): JsonResponse
+    {
+        $product = Product::findOrFail($id);
+        $product->update($request->all());
+        return response()->json(['message' => 'Product updated successfully.', 'product' => $product]);
+    }
+
+    public function destroy($id): JsonResponse
+    {
+        Product::findOrFail($id)->delete();
+        return response()->json(['message' => 'Product deleted successfully.']);
     }
 }
