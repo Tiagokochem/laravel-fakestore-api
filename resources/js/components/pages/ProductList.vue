@@ -43,8 +43,8 @@
 
 <script>
 import axios from "axios";
-import ProductCard from "./ProductCard.vue";
-import CategoryFilter from "./CategoryFilter.vue";
+import ProductCard from "../products/ProductCard.vue";
+import CategoryFilter from "../products/CategoryFilter.vue";
 import Swal from "sweetalert2";
 
 export default {
