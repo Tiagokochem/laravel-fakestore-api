@@ -284,7 +284,14 @@ export default {
     },
   },
   mounted() {
-    this.fetchProducts();
+    const token = localStorage.getItem("auth_token");
+
+    if (!token) {
+      this.$router.push("/login");
+    } else {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      this.fetchProducts();
+    }
   },
 };
 </script>
