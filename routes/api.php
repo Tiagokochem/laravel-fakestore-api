@@ -9,31 +9,36 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
-
 /*
 |--------------------------------------------------------------------------
-| API Routes
+| Public Routes
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('api')->group(function () {
+Route::post('/login', function (Request $request) {
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-    Route::post('/login', function (Request $request) {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+    $user = User::where('email', $request->email)->first();
 
-        $user = User::where('email', $request->email)->first();
+    if (!$user || !Hash::check($request->password, $user->password)) {
+        return response()->json(['message' => 'Invalid login credentials'], 401);
+    }
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Invalid login credentials'], 401);
-        }
+    $token = $user->createToken('auth_token')->plainTextToken;
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+    return response()->json(['token' => $token]);
+});
 
-        return response()->json(['token' => $token]);
-    });
+/*
+|--------------------------------------------------------------------------
+| Protected Routes - Require Authentication
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth:sanctum'])->group(function () {
 
     // Produtos
     Route::get('/products', [ProductController::class, 'index']);
@@ -51,5 +56,11 @@ Route::middleware('api')->group(function () {
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    });
+
+    // Logout
+    Route::post('/logout', function (Request $request) {
+        $request->user()->tokens()->delete();
+        return response()->json(['message' => 'Logged out successfully.']);
     });
 });
